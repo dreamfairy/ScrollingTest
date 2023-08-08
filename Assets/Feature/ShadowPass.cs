@@ -23,7 +23,7 @@ public class ShadowPass : ScriptableRenderPass
     {
         base.Configure(cmd, cameraTextureDescriptor);
         this.ConfigureTarget(m_shadowTexture.depthBuffer);
-        this.ConfigureClear(ClearFlag.None, clearColor);
+        this.ConfigureClear(ClearFlag.All, clearColor);
     }
 
     // This method is called before executing the render pass.

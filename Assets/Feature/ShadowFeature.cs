@@ -12,11 +12,13 @@ public class ShadowFeature : ScriptableRendererFeature
     public Material DrawMat;
     public Material SnapShotMat;
     public Material ScrollMat;
+    public Material DrawPlaneMat;
     public Camera ShadowCamera;
     
     ShadowPass m_ScriptablePass;
     private SnapshotPass m_SnapShotPass;
     private ScrollPass m_ScrollPass;
+    private DrawPlanePass m_DrawPlanePass;
 
     /// <inheritdoc/>
     public override void Create()
@@ -24,17 +26,23 @@ public class ShadowFeature : ScriptableRendererFeature
         m_ScriptablePass = new ShadowPass(ShadowTexture, DrawTarget, DrawMat, ShadowCamera);
         m_SnapShotPass = new SnapshotPass(ShadowTexture, SnapshotTexture, SnapShotMat);
         m_ScrollPass = new ScrollPass(SnapshotTexture, ScrollTexture, ScrollMat);
+        m_DrawPlanePass = new DrawPlanePass(DrawPlaneMat);
         
         // Configures where the render pass should be injected.
         m_ScriptablePass.renderPassEvent = RenderPassEvent.BeforeRenderingShadows;
         m_SnapShotPass.renderPassEvent = RenderPassEvent.BeforeRenderingShadows;
         m_ScrollPass.renderPassEvent = RenderPassEvent.BeforeRenderingShadows;
+        m_DrawPlanePass.renderPassEvent = RenderPassEvent.BeforeRenderingOpaques;
     }
 
     // Here you can inject one or multiple render passes in the renderer.
     // This method is called when setting up the renderer once per-camera.
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
+        if (!Application.isPlaying)
+        {
+            return;
+        }
         //if (TakeSnapShot)
         {
             TakeSnapShot = false;
@@ -47,6 +55,7 @@ public class ShadowFeature : ScriptableRendererFeature
         }
         
         renderer.EnqueuePass(m_ScrollPass);
+        renderer.EnqueuePass(m_DrawPlanePass);
     }
 }
 

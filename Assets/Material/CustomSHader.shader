@@ -40,7 +40,8 @@ Shader "Unlit/CustomSHader"
             v2f vert (appdata v)
             {
                 v2f o;
-                o.vertex = mul(_ShadowVP, float4(v.vertex.xyz, 1));
+                float4x4 mvp = mul(_ShadowVP, unity_ObjectToWorld);
+                o.vertex = mul(mvp, float4(v.vertex.xyz, 1));
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;

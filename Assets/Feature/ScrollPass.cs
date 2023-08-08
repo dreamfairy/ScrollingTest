@@ -27,7 +27,7 @@ public class ScrollPass : ScriptableRenderPass
     public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
     {
         base.Configure(cmd, cameraTextureDescriptor);
-        this.ConfigureTarget(m_scrollTexture);
+        this.ConfigureTarget(m_scrollTexture.depthBuffer);
         this.ConfigureClear(ClearFlag.Depth, clearColor);
     }
 
@@ -37,6 +37,12 @@ public class ScrollPass : ScriptableRenderPass
         cmd.SetGlobalTexture("SrcDepth", m_snapShotTexture.depthBuffer);
         cmd.SetGlobalVector("_BlitST", m_blitData);
         cmd.Blit(m_snapShotTexture, m_scrollTexture, m_scrollMat, 0);
+        context.ExecuteCommandBuffer(cmd);
+        
+        //CommandBufferPool.Release(cmd);
+        
+        cmd.Clear();
+        cmd.SetGlobalTexture("FinalDepth", m_scrollTexture.depthBuffer);
         context.ExecuteCommandBuffer(cmd);
         
         CommandBufferPool.Release(cmd);

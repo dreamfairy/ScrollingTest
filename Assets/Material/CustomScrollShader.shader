@@ -6,6 +6,8 @@ Shader "Unlit/CustomScrollShader"
 
         Pass
         {
+            ZWrite On
+            ZTest Always
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -35,10 +37,11 @@ Shader "Unlit/CustomScrollShader"
                 return o;
             }
 
-            float frag (v2f i) : SV_Depth
+            float4 frag (v2f i, float depth : SV_Depth) : SV_Target
             {
                 float4 col = tex2D(_SrcDepth, i.uv);
-                return col.r;
+                depth = col.r;
+                return float4(col.r, 0, 0, 1);
             }
             ENDCG
         }

@@ -75,4 +75,5 @@ MonoBehaviour:
   DrawMat: {fileID: 2100000, guid: a0df7951a02041c459ab8b1d6ebbfbed, type: 2}
   SnapShotMat: {fileID: 2100000, guid: fdeb4410dd456614787fdf98f3a5bb0c, type: 2}
   ScrollMat: {fileID: 2100000, guid: 8912a1c204d05e748acb7cb296ea2e4a, type: 2}
+  DrawPlaneMat: {fileID: 2100000, guid: 5dbcb89a8075edd41a4c5bdea3ee49c3, type: 2}
   ShadowCamera: {fileID: 0}
