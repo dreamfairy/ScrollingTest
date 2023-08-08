@@ -65,7 +65,7 @@ public class ScrollPass : ScriptableRenderPass
 
             Vector3 nowFrameCenterPos = shadowCamera.transform.position + shadowCamera.transform.forward * ac;
 
-            Matrix4x4 lastVP = cornerData._OriginProjectionMatrix * m_SnapShotShadowCamreraInfo.worldToCameraMatrix;
+            Matrix4x4 lastVP = GL.GetGPUProjectionMatrix(shadowCamera.projectionMatrix, true) * m_SnapShotShadowCamreraInfo.worldToCameraMatrix;
             Vector4 nowPosProj = lastVP.MultiplyPoint(nowFrameCenterPos);
             Vector4 lastPosProj = lastVP.MultiplyPoint(m_SnapShotShadowCamreraInfo.focusCenterPos);
             nowPosProj.x = nowPosProj.x * 0.5f + 0.5f;

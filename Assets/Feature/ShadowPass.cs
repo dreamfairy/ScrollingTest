@@ -11,12 +11,21 @@ public class ShadowPass : ScriptableRenderPass
     private GameObject m_drawTarget;
     private Material m_customMat;
     
-    public ShadowPass(RenderTexture shadowTexture, GameObject drawTarget, Material mat, Camera shadowCam)
+    public ShadowPass(RenderTexture shadowTexture, GameObject drawTarget, Material mat)
     {
         m_shadowTexture = shadowTexture;
-        m_shadowCam = shadowCam;
         m_drawTarget = drawTarget;
         m_customMat = mat;
+    }
+
+    public Camera GetShadowCamera()
+    {
+        return m_shadowCam;
+    }
+
+    public void Setup(Camera cam)
+    {
+        m_shadowCam = cam;
     }
 
     public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
@@ -46,17 +55,6 @@ public class ShadowPass : ScriptableRenderPass
             m_drawTarget = GameObject.Find("ShadowTarget");
         }
 
-        if (!m_shadowCam)
-        {
-            GameObject go = GameObject.Find("Light/ShadowCamera");
-            m_shadowCam = go.GetComponent<Camera>();
-
-            if (Application.isPlaying)
-            {
-                m_shadowCam.enabled = false;
-            }
-        }
-        
         Matrix4x4 vp = GL.GetGPUProjectionMatrix(m_shadowCam.projectionMatrix, true) * m_shadowCam.worldToCameraMatrix;
 
         CommandBuffer cmd = CommandBufferPool.Get("Shadow");
