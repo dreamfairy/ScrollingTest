@@ -4,7 +4,7 @@ using UnityEngine.Rendering.Universal;
 
 public class ShadowFeature : ScriptableRendererFeature
 {
-    public bool TakeSnapShot = false;
+    //public bool LockCameraCorner = false;
     public RenderTexture ShadowTexture;
     public RenderTexture SnapshotTexture;
     public RenderTexture ScrollTexture;
@@ -52,19 +52,20 @@ public class ShadowFeature : ScriptableRendererFeature
             ShadowCamera.enabled = false;
         }
         
-        //if (TakeSnapShot)
+        m_ScriptablePass.Setup(ShadowCamera, false);
+        
+        if (CSMTest.s_TakeSnapShot)
         {
-            TakeSnapShot = false;
-            
-            m_ScriptablePass.Setup(ShadowCamera);
-            
             renderer.EnqueuePass(m_ScriptablePass);
             
             renderer.EnqueuePass(m_SnapShotPass);
             
             m_ScrollPass.BackupPos(ShadowCamera);
+
+            CSMTest.s_TakeSnapShot = false;
         }
         
+        m_ScrollPass.Setup(ShadowCamera, m_ScriptablePass.GetData());
         renderer.EnqueuePass(m_ScrollPass);
         renderer.EnqueuePass(m_DrawPlanePass);
     }

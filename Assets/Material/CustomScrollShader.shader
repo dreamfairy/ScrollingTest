@@ -9,6 +9,7 @@ Shader "Unlit/CustomScrollShader"
             ZWrite On
             ZTest Always
             CGPROGRAM
+            #pragma enable_d3d11_debug_symbols 
             #pragma vertex vert
             #pragma fragment frag
 
@@ -33,7 +34,7 @@ Shader "Unlit/CustomScrollShader"
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv + _BlitST.zw;
+                o.uv = v.uv - float2(_BlitST.z, -_BlitST.w);
                 return o;
             }
 

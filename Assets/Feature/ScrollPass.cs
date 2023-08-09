@@ -32,8 +32,17 @@ public class ScrollPass : ScriptableRenderPass
         m_snapShotTexture = snapshotTexture;
         m_scrollMat = scrollMat;
     }
-    
 
+    public void Setup(Camera shadowCamera, SSMFrustumCorners cornerData)
+    {
+        if (Application.isPlaying)
+        {
+            m_blitData = CalcOffsetUV2(shadowCamera, cornerData);
+        }
+    }
+
+
+    private GameObject BackUpPosGo;
     public void BackupPos(Camera shadowCamera)
     {
         float ab = shadowCamera.transform.position.y;
@@ -52,9 +61,20 @@ public class ScrollPass : ScriptableRenderPass
         m_SnapShotShadowCamreraInfo.focusCenterPos = centerPos;
         m_SnapShotShadowCamreraInfo.worldPos = shadowCamera.transform.position;
         m_SnapShotShadowCamreraInfo.worldToCameraMatrix = shadowCamera.worldToCameraMatrix;
+
+        if (!BackUpPosGo)
+        {
+            BackUpPosGo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            BackUpPosGo.transform.localScale = Vector3.one * 0.1f;
+            BackUpPosGo.name = "BackupPos";
+        }
+
+        BackUpPosGo.transform.position = centerPos;
     }
-    
-    Vector4 CalcOffsetUV2(Camera shadowCamera)
+
+    private GameObject NowPosGo;
+    private float scrollSpeed;
+    Vector4 CalcOffsetUV2(Camera shadowCamera, SSMFrustumCorners cornerData)
         {
             float ab = shadowCamera.transform.position.y;
             float bc = 0;
@@ -64,6 +84,15 @@ public class ScrollPass : ScriptableRenderPass
             bc = Mathf.Sqrt(ab * ab + ac * ac);
 
             Vector3 nowFrameCenterPos = shadowCamera.transform.position + shadowCamera.transform.forward * ac;
+
+            if (!NowPosGo)
+            {
+                NowPosGo = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                NowPosGo.transform.localScale = Vector3.one * 0.1f;
+                NowPosGo.name = "NowPos";
+            }
+
+            NowPosGo.transform.position = nowFrameCenterPos;
 
             Matrix4x4 lastVP = GL.GetGPUProjectionMatrix(shadowCamera.projectionMatrix, true) * m_SnapShotShadowCamreraInfo.worldToCameraMatrix;
             Vector4 nowPosProj = lastVP.MultiplyPoint(nowFrameCenterPos);
@@ -75,28 +104,43 @@ public class ScrollPass : ScriptableRenderPass
             
             Vector3 diffPos = lastPosProj - nowPosProj;
             
-            float onePixelDis = 1.0f / (4096);
+            float onePixelDis = 1.0f/2048.0f;
             //float fw = 1.0f / Vector3.Distance(cornerData._FarCorner[0], cornerData._FarCorner[3]);
 
-            if (Mathf.Abs(diffPos.x) < onePixelDis)
-            {
-                diffPos.x = 0;
-            }
-
-            if (Mathf.Abs(diffPos.y) < onePixelDis)
-            {
-                diffPos.y = 0;
-            }
+            // if (Mathf.Abs(diffPos.x) < onePixelDis)
+            // {
+            //     diffPos.x = 0;
+            // }
+            //
+            // if (Mathf.Abs(diffPos.y) < onePixelDis)
+            // {
+            //     diffPos.y = 0;
+            // }
 
             float dx = diffPos.x / onePixelDis;
             float dy = diffPos.y / onePixelDis;
-            int fx = (int)(dx);
-            int fy = (int)(dy);
+            float fx = Mathf.Round(dx);
+            float fy = Mathf.Round(dy);
 
             float fixedResultX = fx * onePixelDis;
             float fixedResultY = fy * onePixelDis;
+            
+            float lastStepX = m_blitData.z - fixedResultX;
+            float lastStepY = m_blitData.w - fixedResultY;
+            
+            //Debug.LogFormat("Scroll X {0} Step {1}", fixedResultX, lastStep);
 
-            return new Vector4(1, 1, fixedResultX, fixedResultY);
+            if (lastStepX != 0 || lastStepY != 0)
+            {
+                Debug.LogFormat("StepChanged nowStep {0} , {1} _ Diff {2}, {3} _ {4}",fixedResultX, fixedResultY, lastStepX, lastStepY, Time.frameCount);
+            }
+
+            if (Mathf.Abs((float)lastStepX) / onePixelDis >= 2 || Mathf.Abs((float)lastStepY) / onePixelDis >= 2)
+            {
+                Debug.Log("May case shake_" + Time.frameCount);
+            }
+
+            return new Vector4(1, 1, (float)fixedResultX, (float)fixedResultY);
         }
 
     public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)

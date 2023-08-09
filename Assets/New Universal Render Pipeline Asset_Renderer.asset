@@ -67,7 +67,7 @@ MonoBehaviour:
   m_Name: ShadowFeature
   m_EditorClassIdentifier: 
   m_Active: 1
-  TakeSnapShot: 0
+  LockCameraCorner: 0
   ShadowTexture: {fileID: 8400000, guid: 0b69b094e1567594e815ac481ec9b8ba, type: 2}
   SnapshotTexture: {fileID: 8400000, guid: 8ccec9fae468c744e9c504e9c5eea651, type: 2}
   ScrollTexture: {fileID: 8400000, guid: 4649e206f2bb01c4aa5839112971c9ae, type: 2}
