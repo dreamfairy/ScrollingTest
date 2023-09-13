@@ -20,11 +20,24 @@ public class ShadowFeature : ScriptableRendererFeature
     private ScrollPass m_ScrollPass;
     private DrawPlanePass m_DrawPlanePass;
 
+    private RenderTexture m_innerShadowTexture;
+
     /// <inheritdoc/>
     public override void Create()
     {
-        m_ScriptablePass = new ShadowPass(ShadowTexture, DrawTarget, DrawMat);
-        m_SnapShotPass = new SnapshotPass(ShadowTexture, SnapshotTexture, SnapShotMat);
+        //ShadowTexture.format = RenderTextureFormat.Depth;
+
+        if (null == m_innerShadowTexture)
+        {
+            m_innerShadowTexture =
+                new RenderTexture(ShadowTexture.width, ShadowTexture.height, 24, RenderTextureFormat.Depth);
+            m_innerShadowTexture.autoGenerateMips = false;
+            m_innerShadowTexture.filterMode = FilterMode.Point;
+            m_innerShadowTexture.wrapMode = TextureWrapMode.Clamp;
+        }
+        
+        m_ScriptablePass = new ShadowPass(m_innerShadowTexture, DrawTarget, DrawMat);
+        m_SnapShotPass = new SnapshotPass(m_innerShadowTexture, SnapshotTexture, SnapShotMat);
         m_ScrollPass = new ScrollPass(SnapshotTexture, ScrollTexture, ScrollMat);
         m_DrawPlanePass = new DrawPlanePass(DrawPlaneMat);
         
@@ -54,7 +67,7 @@ public class ShadowFeature : ScriptableRendererFeature
         
         m_ScriptablePass.Setup(ShadowCamera, false);
         
-        if (CSMTest.s_TakeSnapShot)
+        //if (CSMTest.s_TakeSnapShot)
         {
             renderer.EnqueuePass(m_ScriptablePass);
             

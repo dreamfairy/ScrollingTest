@@ -20,15 +20,15 @@ public class SnapshotPass : ScriptableRenderPass
    public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
    {
       base.Configure(cmd, cameraTextureDescriptor);
-      this.ConfigureTarget(m_targetTexture.depthBuffer);
-      this.ConfigureClear(ClearFlag.None, clearColor);
+      this.ConfigureTarget(m_targetTexture.colorBuffer, m_targetTexture.depthBuffer);
+      this.ConfigureClear(ClearFlag.Depth, clearColor);
    }
 
    public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
    {
       var cmd = CommandBufferPool.Get("Snapshot");
       cmd.SetGlobalTexture("_SrcDepth", m_shadowTexture.depthBuffer);
-      cmd.Blit(m_shadowTexture.depthBuffer, m_targetTexture.depthBuffer, m_blitDepthMat, 0);
+      cmd.Blit(null, m_targetTexture.depthBuffer, m_blitDepthMat, 0);
       context.ExecuteCommandBuffer(cmd);
       CommandBufferPool.Release(cmd);
    }

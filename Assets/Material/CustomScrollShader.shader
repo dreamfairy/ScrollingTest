@@ -42,7 +42,8 @@ Shader "Unlit/CustomScrollShader"
             {
                 float4 col = tex2D(_SrcDepth, i.uv);
                 depth = col.r;
-                return float4(col.r, 0, 0, 1);
+
+                return col;
             }
             ENDCG
         }
