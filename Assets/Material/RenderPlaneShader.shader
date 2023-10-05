@@ -49,9 +49,9 @@ Shader "Unlit/RenderPlaneShader"
             {
                 float4 shadowPos = mul(_ShadowVP, float4(i.worldPos, 1));
                 shadowPos.xy = shadowPos.xy * 0.5 + 0.5;
-                shadowPos.y = 1 - shadowPos.y;
+                //shadowPos.y = 1 - shadowPos.y;
 
-                float d = tex2D(FinalDepth, shadowPos.xy).r;
+                float d = 1- tex2D(FinalDepth, shadowPos.xy).r;
                 
                 fixed4 col = tex2D(_MainTex, i.uv);
 

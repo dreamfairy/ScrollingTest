@@ -34,7 +34,7 @@ Shader "Unlit/CustomScrollShader"
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv - float2(_BlitST.z, -_BlitST.w);
+                o.uv = v.uv - float2(_BlitST.z, _BlitST.w);
                 return o;
             }
 

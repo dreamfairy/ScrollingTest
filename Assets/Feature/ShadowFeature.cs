@@ -67,7 +67,7 @@ public class ShadowFeature : ScriptableRendererFeature
         
         m_ScriptablePass.Setup(ShadowCamera, false);
         
-        //if (CSMTest.s_TakeSnapShot)
+        if (CSMTest.s_TakeSnapShot)
         {
             renderer.EnqueuePass(m_ScriptablePass);
             

@@ -22,6 +22,7 @@ public class ScrollPass : ScriptableRenderPass
         public Vector3 focusCenterPos;
         public int captureFrame;
         public Matrix4x4 worldToCameraMatrix;
+        public Matrix4x4 WorldToVP;
     }
     
     private CSM_CachePointInfo m_SnapShotShadowCamreraInfo;
@@ -61,6 +62,8 @@ public class ScrollPass : ScriptableRenderPass
         m_SnapShotShadowCamreraInfo.focusCenterPos = centerPos;
         m_SnapShotShadowCamreraInfo.worldPos = shadowCamera.transform.position;
         m_SnapShotShadowCamreraInfo.worldToCameraMatrix = shadowCamera.worldToCameraMatrix;
+        m_SnapShotShadowCamreraInfo.WorldToVP = GL.GetGPUProjectionMatrix(shadowCamera.projectionMatrix, false) *
+                                                shadowCamera.worldToCameraMatrix;
 
         if (!BackUpPosGo)
         {
@@ -103,44 +106,15 @@ public class ScrollPass : ScriptableRenderPass
             lastPosProj.y = lastPosProj.y * 0.5f + 0.5f;
             
             Vector3 diffPos = lastPosProj - nowPosProj;
-            
-            float onePixelDis = 1.0f/2048.0f;
-            //float fw = 1.0f / Vector3.Distance(cornerData._FarCorner[0], cornerData._FarCorner[3]);
 
-            // if (Mathf.Abs(diffPos.x) < onePixelDis)
-            // {
-            //     diffPos.x = 0;
-            // }
-            //
-            // if (Mathf.Abs(diffPos.y) < onePixelDis)
-            // {
-            //     diffPos.y = 0;
-            // }
+            Vector3 nowShadowCameraPos = shadowCamera.transform.position;
+            Vector4 nowLocalPos = m_SnapShotShadowCamreraInfo.WorldToVP *
+                                  new Vector4(nowShadowCameraPos.x, nowShadowCameraPos.y, nowShadowCameraPos.z, 1);
 
-            float dx = diffPos.x / onePixelDis;
-            float dy = diffPos.y / onePixelDis;
-            float fx = Mathf.Round(dx);
-            float fy = Mathf.Round(dy);
+            diffPos.x = 0.5f - (nowLocalPos.x * 0.5f + 0.5f);
+            diffPos.y = 0.5f - (nowLocalPos.y * 0.5f + 0.5f);
 
-            float fixedResultX = fx * onePixelDis;
-            float fixedResultY = fy * onePixelDis;
-            
-            float lastStepX = m_blitData.z - fixedResultX;
-            float lastStepY = m_blitData.w - fixedResultY;
-            
-            //Debug.LogFormat("Scroll X {0} Step {1}", fixedResultX, lastStep);
-
-            if (lastStepX != 0 || lastStepY != 0)
-            {
-                Debug.LogFormat("StepChanged nowStep {0} , {1} _ Diff {2}, {3} _ {4}",fixedResultX, fixedResultY, lastStepX, lastStepY, Time.frameCount);
-            }
-
-            if (Mathf.Abs((float)lastStepX) / onePixelDis >= 2 || Mathf.Abs((float)lastStepY) / onePixelDis >= 2)
-            {
-                Debug.Log("May case shake_" + Time.frameCount);
-            }
-
-            return new Vector4(1, 1, (float)fixedResultX, (float)fixedResultY);
+            return new Vector4(1, 1, (float)diffPos.x, (float)diffPos.y);
         }
 
     public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
