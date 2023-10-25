@@ -10,7 +10,11 @@
 使用方式，找到MainCamera, 找到图中 CSMTest 组件
 
 运行场景
+
 1.点击TakeSnapShot, 打勾后，勾会立即消失，是正常的
+
 2.点击Do ShakeX, 或者 Do Shadke Z 
+
 3.打开FrameDebugger 检查阴影pass 是否已经为空
+
 4.enjoy
