@@ -17,7 +17,7 @@
 
 1.点击TakeSnapShot, 打勾后，勾会立即消失，是正常的
 
-2.点击Do ShakeX, 或者 Do Shadke Z 
+2.点击Do ShakeX, 或者 Do ShakeX Z 
 
 3.打开FrameDebugger 检查阴影pass 是否已经为空
 
