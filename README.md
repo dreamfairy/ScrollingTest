@@ -2,6 +2,10 @@
 滚动阴影Demo
 
 
+![](https://github.com/dreamfairy/ScrollingTest/blob/main/capture/20231025_102310.gif?raw=true)
+
+
+
 
 ![](https://github.com/dreamfairy/ScrollingTest/blob/main/capture/030791AF-ADFD-44bb-83BE-4F56CEEE2FAF.png?raw=true)
 
