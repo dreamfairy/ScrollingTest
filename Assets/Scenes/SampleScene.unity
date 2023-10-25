@@ -514,7 +514,7 @@ MonoBehaviour:
   UseOneFrame: 0
   DoShakeX: 0
   DoShakeZ: 0
-  ShakeSpeed: 1
+  ShakeSpeed: 0.1
   ShakeLen: 1
   TakeSnapShot: 0
 --- !u!1 &982058467
